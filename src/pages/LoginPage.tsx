@@ -10,13 +10,22 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const ROLE_ROUTES: Record<string, string> = {
+    ADMIN: '/admin',
+    HQ_MANAGER: '/hq',
+    BRANCH_MANAGER: '/branch',
+    CHEF: '/chef',
+    CASHIER: '/cashier',
+    WAITER: '/waiter',
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const loggedInUser = await login(email, password);
+      navigate(ROLE_ROUTES[loggedInUser.role] || '/dashboard', { replace: true });
     } catch {
       setError('Invalid email or password. Please try again.');
     } finally {

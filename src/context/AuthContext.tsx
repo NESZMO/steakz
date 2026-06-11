@@ -13,7 +13,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
   loading: boolean;
 }
@@ -35,12 +35,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     const { data } = await api.post('/auth/login', { email, password });
     setToken(data.token);
     setUser(data.user);
     localStorage.setItem('steakz_token', data.token);
     localStorage.setItem('steakz_user', JSON.stringify(data.user));
+    return data.user;
   };
 
   const logout = () => {
